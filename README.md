@@ -24,3 +24,5 @@ Se encontrar algum problema ou tiver dúvidas, sinta-se à vontade para abrir um
 
 
 Divirta-se explorando o Chettgram! 🌟
+
+Este projeto foi impulsionado com a contribuição da inteligência artificial, adicionando uma camada extra de inovação ao Chettgram. 🤖✨
