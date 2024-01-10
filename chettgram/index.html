@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Chettgram- Cadastre-se ou Entre!</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then((registration) => {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch((error) => {
+            console.error('Erro ao registrar o Service Worker:', error);
+          });
+      });
+    }
+  </script>
+  <style>
+    body {
+      touch-action: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      background-image: url('https://firebasestorage.googleapis.com/v0/b/galaxy--web.appspot.com/o/emerald_green_hand_painted_watercolour_background_0903.jpg?alt=media&token=59a9fde6-b289-48e8-8a49-c4369537d8ec');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .swal2-confirm {
+        background-color: #4CAF50 !important;
+        color: #fff !important;
+        outline: none !important;
+        border: none !important;
+    }
+    .swal2-popup {
+      background-color: #333 !important;
+      color: #fff !important;
+    }
+    .swal2-container button:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    
+    #info-icon {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    #logo {
+      width: 200px;
+      height: auto;
+      margin-top: 20px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.7.1/angular-material-icons.min.js" integrity="sha512-WeG+hZOdUm8P4dCxmm9JWzYZf7YJLxxgeGHzgrl0KJpKLKRm06UV8ttDgW7ldr4jOqjfQlbg7Ssk6/aqeus+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <img id="logo" src="https://firebasestorage.googleapis.com/v0/b/chettgram.appspot.com/o/Chettgram__1_-removebg-preview.png?alt=media&token=f6d89595-6633-47d7-ac7b-a8893cc59248" alt="Logo">
+
+  <button id="signup">Cadastre-se</button>
+  <button id="login">Login</button>
+
+  <!-- Adicionado o ícone info_outline -->
+  <!-- Adicionado o ícone info_outline -->
+<button id="info-button" style="background: none; border: none; cursor: pointer;">
+  <i id="info-icon" class="material-icons">info_outline</i>
+</button>
+
+  <script>
+    
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAyySW2B0C6_AwPLLWiwESUQ9y7mDMxoC4",
+  authDomain: "chettgram.firebaseapp.com",
+  projectId: "chettgram",
+  storageBucket: "chettgram.appspot.com",
+  messagingSenderId: "243653327696",
+  appId: "1:243653327696:web:7ab6702055e0bf08924a55",
+  measurementId: "G-FD4GR9HHC0"
+};
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+    var signupButton = document.getElementById('signup');
+    var loginButton = document.getElementById('login');
+
+    signupButton.addEventListener('click', function () {
+      Swal.fire({
+        title: 'Cadastro',
+        html:
+          '<label for="email">Email:</label><input type="text" id="email" name="email" style="color:white;background-color:#2f2f2f; outline:none; border:none; border-radius: 5px;"><br>' +
+          '<label for="password">Senha:</label><input type="password" id="password" name="password" style="color:white;background-color:#2f2f2f; outline:none; border:none; border-radius: 5px;"><br>' +
+          '<label for="acceptTerms">Eu aceito os <span onclick="showTermsPopup()" style="cursor:pointer; color: #4CAF50;">Termos de Serviço</span></label>' +
+          '<input type="checkbox" id="acceptTerms">',
+        showCancelButton: true,
+        confirmButtonText: 'Cadastrar',
+        cancelButtonText: 'Cancelar',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+          var email = document.getElementById('email').value.trim();
+          var password = document.getElementById('password').value.trim();
+          var acceptedTerms = document.getElementById('acceptTerms').checked;
+
+          if (!email || !password || !acceptedTerms) {
+            Swal.showValidationMessage('Revise as informações novamente e aceite os Termos de Serviço.');
+            return false;
+          }
+
+          return firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              var user = userCredential.user;
+              return db.collection("users").doc(user.uid).set({
+                email: email,
+                password: password
+              });
+            })
+            .catch((error) => {
+              Swal.showValidationMessage(`Erro: ${error.message}`);
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+        customClass: {
+          container: 'custom-swal-container',
+          popup: 'custom-swal-popup',
+          confirmButton: 'custom-swal-btn',
+          cancelButton: 'custom-swal-btn'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Usuário cadastrado com sucesso!',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'custom-swal-btn',
+            }
+          }).then(() => {
+            window.location.href = 'index.html';
+          });
+        }
+      });
+    });
+
+    loginButton.addEventListener('click', function () {
+      Swal.fire({
+        title: 'Login',
+        html:
+         '<label for="email">Email:</label><input type="text" id="email" name="email" style="color:white;background-color:#2f2f2f; outline:none; border:none; border-radius: 5px;"><br>' +
+          '<label for="password">Senha:</label><input type="password" id="password" name="password" style="color:white;background-color:#2f2f2f; outline:none; border:none; border-radius: 5px;">',
+       
+        showCancelButton: true,
+        confirmButtonText: 'Entrar',
+        cancelButtonText: 'Cancelar',
+        background: 'red',
+        preConfirm: () => {
+          var email = document.getElementById('email').value.trim();
+          var password = document.getElementById('password').value.trim();
+
+          if (!email || !password) {
+            Swal.showValidationMessage('Revise as informações novamente.');
+            return false;
+          }
+
+          return firebase.auth().signInWithEmailAndPassword(email, password)
+            .catch((error) => {
+              Swal.showValidationMessage(`Erro: ${error.message}`);
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+        customClass: {
+          container: 'custom-swal-container',
+          popup: 'custom-swal-popup',
+          confirmButton: 'custom-swal-btn',
+          cancelButton: 'custom-swal-btn'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Login efetuado com sucesso!',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'custom-swal-btn',
+            }
+          }).then(() => {
+            window.location.href = 'home.html';
+          });
+        }
+      });
+    });
+// Adicionado o evento de clique para exibir o pop-up de informações
+document.getElementById('info-button').addEventListener('click', function () {
+  Swal.fire({
+    title: 'Informações sobre o Galaxy',
+    html: `
+      <p><strong>Metas da Nossa Rede Social Web</strong></p>
+      <p>Nossa rede social web tem como meta principal expandir e ser acessível para todos. Estamos comprometidos em ser rigorosos em relação a práticas intoleráveis, por isso implementamos um sistema de banimento permanente para garantir a segurança e o respeito dentro de nossa comunidade. Além disso, nos esforçamos para ser rápidos em nossos suportes e trazer atualizações constantes com novos recursos para melhorar a experiência do usuário.</p>
+      
+      <p><strong>Objetivos da Nossa Rede Social Web</strong></p>
+      <p>Nosso objetivo é substituir a prática de baixar uma rede social, tornando a experiência mais simples, dinâmica e rápida. Queremos que nossa plataforma seja acessível com o máximo de dispositivos possíveis, permitindo que os usuários se conectem e compartilhem independentemente do dispositivo que estão usando.</p>
+      
+      <p><strong>Sobre o Criador</strong></p>
+      <p>Nossa rede social web foi criada por Paulo Andrei Alves, um morador de uma pequena cidade do interior de Minas Gerais. Paulo é um estudante de Análise e Desenvolvimento de Sistemas no IFBA, e ele usou seu conhecimento e habilidades para criar uma plataforma que é ao mesmo tempo inclusiva e inovadora.</p>
+    `,
+    icon: 'info',
+    confirmButtonText: 'OK',
+    customClass: {
+      confirmButton: 'custom-swal-btn',
+    }
+  });
+});
+
+    // Adicionado o evento de clique para exibir o pop-up de informações
+    function showTermsPopup() {
+      Swal.fire({
+        title: 'Termos de Serviço da Nossa Rede Social Web',
+        html: `
+          <ol>
+            <li><strong>Aceitação dos Termos</strong>: Ao acessar e usar nossa rede social web, você aceita e concorda em estar vinculado por estes termos de serviço.</li>
+            <li><strong>Acesso e Uso da Rede Social</strong>: Nossa rede social web é acessível a todos e tem como objetivo ser simples, dinâmica e rápida. Nos esforçamos para tornar nossa plataforma acessível com o máximo de dispositivos possíveis.</li>
+            <li><strong>Conduta do Usuário</strong>: Estamos comprometidos em manter um ambiente seguro e respeitoso para todos os usuários. Práticas intoleráveis não serão aceitas e resultarão em banimento permanente.</li>
+            <li><strong>Suporte e Atualizações</strong>: Oferecemos suporte rápido aos usuários e atualizações constantes com novos recursos.</li>
+            <li><strong>Alterações nos Termos de Serviço</strong>: Podemos alterar estes termos de serviço de tempos em tempos. Se fizermos alterações, notificaremos você revisando a data na parte superior destes termos.</li>
+          </ol>
+          
+          <h4>Política de Privacidade</h4>
+          <ol start="6">
+            <li><strong>Coleta de Informações</strong>: Coletamos informações para fornecer melhores serviços a todos os nossos usuários. As informações coletadas são privadas e livres de leitura de terceiros.</li>
+            <li><strong>Uso das Informações</strong>: Nós não compartilhamos suas informações pessoais com terceiros ou empresas. Nossa rede se baseia na máxima privacidade e retenção de dados. As informações coletadas poderão ser acessadas apenas para fins de correção de código e implementação de funcionalidades, somente pelo criador.</li>
+            <li><strong>Segurança</strong>: A segurança do banco de dados é fornecida pelos serviços Firebase Google. As conversas ainda não são criptografadas, mas isso em breve será possível.</li>
+            <li><strong>Mudanças na Política</strong>: Esta política é original do criador e, em caso de venda, poderá conferir ao novo proprietário o poder de mudar a mesma.</li>
+            <li><strong>Versão Beta</strong>: A versão atual é apenas beta e não representa a versão final. Pode acontecer bugs e erros que serão reparados pelo desenvolvedor.</li>
+          </ol>
+        `,
+        confirmButtonText: 'Fechar',
+        customClass: {
+          confirmButton: 'custom-swal-btn',
+        }
+      });
+    }
+  </script>
+</body>
+</html>

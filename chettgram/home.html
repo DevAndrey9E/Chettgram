@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4CAF50">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chettgram - Página inicial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+
+     <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then((registration) => {
+                console.log('Service Worker registrado com sucesso:', registration);
+              })
+              .catch((error) => {
+                console.error('Erro ao registrar o Service Worker:', error);
+              });
+          });
+        }
+      </script>
+    <style>
+
+#welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out; /* Adição da transição para suavizar o efeito */
+        }
+
+        #welcome-message {
+            color: white;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        #welcome-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Evita interações com o elemento oculto */
+        }
+
+body {
+    touch-action: none;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.account-icon {
+    font-size: 48px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+em {
+    font-style: italic;
+    font-size: 0.8em;
+    display: block;
+    margin-top: 5px;
+    color: #63FD63; /* Cor verde para o aviso */
+}
+
+#content {
+    text-align: center;
+    padding: 20px;
+}
+
+.iziToast-title,
+.iziToast-message {
+    font-family: Helvetica;
+    color: #000000 !important; /* Cor preta para o texto */
+    font-weight: bold !important; /* Texto em negrito */
+}
+
+.iziToast {
+    background-color: #63FD63 !important; /* Cor de fundo personalizada */
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 10px;
+    text-align: center;
+   
+}
+@media (max-width: 375px){
+    footer button.icon-btn {
+    margin-right: -19px; /* ou o valor que você preferir */
+}
+
+}
+
+.green-btn {
+    background-color: #63FD63; /* Cor alterada para #63FD63 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.icon-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+    margin: 0 10px;
+}
+
+.icon-btn:focus {
+    background-color: transparent !important;
+}
+
+/* Adicione regras de estilo específicas para o card de publicação */
+.post-card {
+    background-size: cover;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    position: relative;
+}
+
+.post-card img {
+    width: 80%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover; /* Garante que a imagem cubra todo o espaço disponível sem distorções */
+}
+
+@media (min-width: 768px) {
+    /* Ajusta o tamanho da imagem para dispositivos com largura de tela igual ou superior a 768 pixels (por exemplo, tablets e computadores) */
+    .post-card img {
+        width: 30%;
+    }
+}
+
+.post-card h4 {
+    margin: 0 15px;
+    max-width: 100%; 
+    font-size: 16px;
+    margin-top: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+   
+}
+
+@media (max-width: 375px){
+.post-card h4 {
+    margin: 0 15px;
+    max-width: 100%; 
+    font-size: 16px;
+    margin-top: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+}
+/* Adicione estas regras de estilo para os ícones de publicação */
+.post-icons {
+    display: flex;
+    position: relative;
+    transform: translate(130px, 03px);
+    align-items: center; /* Adicionado para centralizar verticalmente */
+    width: 100%;
+    margin-top: 10px;
+}
+@media (max-width: 375px){
+    .post-icons {
+    display: flex;
+    position: relative;
+    transform: translate(90px, 03px);
+    align-items: center; /* Adicionado para centralizar verticalmente */
+    width: 100%;
+    margin-top: 10px;
+} 
+}
+
+/* Ajuste de margem para a versão desktop */
+@media (min-width: 768px) {
+    .post-icons {
+        transform: translate(520px, 03px);
+    }
+}
+
+
+
+.post-icons i {
+    font-size: 24px;
+    color: white;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.post-icons i:hover {
+    color: #4CAE4C; /* Altera a cor ao passar o mouse */
+}
+
+/* Adicione estas regras ao seu CSS */
+.swal2-textarea {
+    font-size: 14px;
+    font-family: Helvetica;
+    outline: none;
+    margin-right: 10px;
+    border: none;
+    border-radius: 18px;
+    background-color: #393939;
+    color: #fff;
+    resize: none;
+    max-height: 40px;
+    
+    text-indent: 10px;
+   
+}
+
+
+
+.swal2-textarea:focus {
+    outline: none !important;
+    border: 1px solid #5c5d5c !important; /* Cor e largura da borda de foco */
+    box-shadow: none !important;
+}
+.swal2-confirm:focus {
+    outline: none !important;
+   
+    box-shadow: none !important;
+}
+/* Estilos para o modal de comentários */
+.swal2-popup {
+    background-color: #333333; /* Cor de fundo dark */
+}
+
+/* Estilos para os botões de ação no modal de comentários */
+.swal2-actions {
+    display: flex;
+    justify-content: space-between;
+}
+.swal2-title {
+    background-color: transparent; /* Cor de fundo transparente */
+    color: #63FD63; /* Cor verde para o texto */
+    border: none; /* Remove a borda */
+    cursor: pointer;
+   
+}
+
+.swal2-cancel {
+    background-color: #656565!important; /* Cor de fundo transparente */
+    color: #63fd63!important; /* Cor verde para o texto */
+    border: none; /* Remove a borda */
+    cursor: pointer;
+    font-size: 16px;
+}
+/* Estilos para o botão de excluir */
+.swal2-confirm {
+    background-color: #63FD63!important; /* Cor de fundo transparente */
+    color: #000000!important; /* Cor verde para o texto */
+    border: none; /* Remove a borda */
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Estilos para o botão de cancelar (opcional) */
+.swal2-cancel {
+    background-color: transparent; /* Cor de fundo transparente */
+    color: white; /* Cor branca para o texto */
+    border: none; /* Remove a borda */
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Estilos para o botão de excluir nos comentários */
+.delete-comment {
+    background-color: transparent !important; /* Cor de fundo transparente */
+    color: #4CAF50 !important; /* Cor verde para o texto */
+    border: none !important; /* Remove a borda */
+    cursor: pointer !important;
+    font-size: 16px !important;
+}
+
+/* Estilos adicionais, se necessário */
+.delete-comment:hover {
+    text-decoration: underline !important; /* Adiciona sublinhado ao passar o mouse */
+}
+
+.swal2-popup .swal2-textarea {
+    color: #d3d3d3 !important; /* Altere para a cor desejada */
+    /* Outras propriedades CSS conforme necessário */
+}
+
+.swal2-popup textarea.swal2-textarea::placeholder,
+.swal2-popup input.swal2-input::placeholder {
+   
+  
+
+    color: #6a6a6a !important; /* Altere para a cor desejada */
+}
+
+#user-communities-modal {
+    background-color: #2b2b2b; /* Cor de fundo dark */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.community-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.community-item {
+    display: flex;
+    color:#c7c7c7;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2b2b2b; /* Cor de fundo dark */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #4f4f4f; /* Cor da borda */
+}
+
+
+
+.community-item-buttons button {
+    font-weight: bold;
+    background-color: #63FD63; /* Cor do botão */
+    color: black;
+    border: none;
+    border-radius: 5px;
+    margin: 0 10px 4px 0; /* Adiciona espaço à direita de cada botão */
+    cursor: pointer;
+}
+
+
+.community-item-buttons button:hover {
+    background-color: #4CAE4C;
+    color: white; /* Alterado para fonte branca ao passar o mouse */
+}
+#username-info {
+    text-align: center;
+    font-weight: bold;
+    position: absolute !important;
+    transform: translate(0px, 30px);
+}
+
+</style>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+   
+</head>
+
+<body>
+
+    <header style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <button class="icon-btn" onclick="showAccountPopup()"><i style="transform: translate(20px, 30px);" class="material-icons account-icon">account_circle</i></button>
+        <!-- Substituído o h1 pela imagem do logo -->
+        <img id="logo-small" src="https://firebasestorage.googleapis.com/v0/b/chettgram.appspot.com/o/Chettgram__1_-removebg-preview.png?alt=media&token=f6d89595-6633-47d7-ac7b-a8893cc59248" alt="Logo" style="width: 140px; height: auto; margin-top: 10px;">
+        <em id="username-info">Adicione um nome de usuário</em>
+      </header>
+      
+      
+      
+
+    <div id="content">
+        <!-- Cards de comunidades serão adicionados aqui dinamicamente -->
+    </div>
+    <div id="welcome-overlay">
+        <div id="welcome-message">
+            Oi de novo!
+        </div>
+    </div>
+    <footer>
+        <button class="icon-btn" onclick="redirectToHomePage()"><i class="material-icons">home</i></button>
+        <button class="icon-btn" onclick="showUserCommunitiesInModal()"><i class="material-icons">forum</i></button>
+        <button class="icon-btn" onclick=" showCreatePostForm()"><i class="material-icons" style="color: #63FD63;">add_circle_outline</i></button>
+        <button class="icon-btn" onclick="showComunnitiePage()"><i class="material-icons" style="color: #63FD63;">blur_on</i></button>
+        <button class="icon-btn" onclick="logout()"><i class="material-icons">logout</i></button>
+    </footer>
+    
+
+    <!-- Modal de Comunidades -->
+    <div id="communities-modal" class="modal">
+        <div class="modal-content">
+            <h4>Comunidades</h4>
+            <!-- Lista de comunidades será adicionada aqui dinamicamente -->
+        </div>
+    </div>
+
+    <script>
+     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAyySW2B0C6_AwPLLWiwESUQ9y7mDMxoC4",
+  authDomain: "chettgram.firebaseapp.com",
+  projectId: "chettgram",
+  storageBucket: "chettgram.appspot.com",
+  messagingSenderId: "243653327696",
+  appId: "1:243653327696:web:7ab6702055e0bf08924a55",
+  measurementId: "G-FD4GR9HHC0"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+      $(document).ready(function () {
+    $('#welcome-message').delay(2000).fadeOut();
+    $('.modal').modal();
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            loadUserInfo();
+            loadPosts();
+        }
+    });
+});
+
+function redirectToHomePage() {
+    window.location.href = 'home.html';
+}
+function showComunnitiePage(){
+    window.location.href = 'home-comunities.html';
+}
+
+
+ document.addEventListener("DOMContentLoaded", function () {
+            // Aguarde 4 segundos e, em seguida, oculte a mensagem de boas-vindas
+            setTimeout(function () {
+                var welcomeOverlay = document.getElementById('welcome-overlay');
+                welcomeOverlay.classList.add('hidden');
+            }, 2000);
+        });
+
+function showUsernameAlert() {
+    iziToast.warning({
+        title: 'Atenção',
+        message: 'Você ainda não definiu um nome de usuário',
+        position: 'topCenter',
+        timeout: 3000, // Tempo em milissegundos (3 segundos neste exemplo)
+        close: true,
+        backgroundColor: '#63FD63', // Cor de fundo
+        color: 'black' // Cor do texto
+    });
+}
+
+
+
+        function loadUserInfo() {
+            var user = firebase.auth().currentUser;
+
+            if (user) {
+                var userDocRef = firebase.firestore().collection("users").doc(user.uid);
+
+                userDocRef.onSnapshot((snapshot) => {
+                    if (snapshot.exists) {
+                        var username = snapshot.data().username;
+                        if (username) {
+                            setUserInfo(username);
+                        } else {
+                            // Se o nome de usuário não estiver definido, exibimos o alerta estilizado
+                            showUsernameAlert();
+                        }
+                    } else {
+                        // Se o documento do usuário não existir, exibimos o alerta estilizado
+                        showUsernameAlert();
+                    }
+                });
+            } else {
+                // Se o usuário não estiver autenticado, exibimos o alerta estilizado
+                showUsernameAlert();
+            }
+        }
+
+        function setUserInfo(username) {
+            document.getElementById('username-info').innerText = username;
+        }
+
+        function showAccountPopup() {
+    Swal.fire({
+        title: 'Defina seu nome de usuário',
+        input: 'text',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (username) => {
+            if (!username) {
+                Swal.showValidationMessage('Nome de usuário não pode ser vazio');
+            }
+            return username;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            setUserInfo(result.value);
+
+            // Salvar o nome de usuário no Firestore
+            var user = firebase.auth().currentUser;
+            if (user) {
+                firebase.firestore().collection("users").doc(user.uid).set({
+                    username: result.value
+                }, { merge: true }).then(() => {
+                    console.log("Nome de usuário salvo com sucesso");
+                }).catch((error) => {
+                    console.error("Erro ao salvar o nome de usuário:", error);
+                });
+            }
+        }
+    });
+}
+
+function showCreatePostForm() {
+        Swal.fire({
+            title: 'Criar Publicação',
+            html:
+                '<label for="post-image-url">URL da Imagem:</label>' +
+                '<input type="text" id="post-image-url" name="post-image-url" class="swal2-input">' +
+                '<label for="post-title">Título:</label>' +
+                '<input type="text" id="post-title" name="post-title" class="swal2-input">',
+            showCancelButton: true,
+            confirmButtonText: 'Criar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                var postImageUrl = document.getElementById('post-image-url').value.trim();
+                var postTitle = document.getElementById('post-title').value.trim();
+
+                if (!postImageUrl || !postTitle) {
+                    Swal.showValidationMessage('Revise as informações novamente.');
+                    return false;
+                }
+
+                var user = firebase.auth().currentUser;
+
+                if (user) {
+                    // Adiciona a publicação no Firestore
+                    var postData = {
+                    creator: user.uid,
+                    description: postTitle,
+                    image: postImageUrl,
+                    comments: [],
+                    likes: []
+                };
+
+                    firebase.firestore().collection("posts").add(postData).then((docRef) => {
+                        console.log("Publicação criada com sucesso:", docRef.id);
+                    }).catch((error) => {
+                        console.error("Erro ao criar publicação:", error);
+                    });
+                }
+
+                return { title: postTitle, image: postImageUrl };
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Lógica para adicionar a nova publicação à interface aqui
+                console.log(result.value);
+            }
+        });
+    }
+
+function showUserCommunitiesInModal() {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userDocRef = firebase.firestore().collection("users").doc(user.uid);
+
+        userDocRef.get().then((userSnapshot) => {
+            if (userSnapshot.exists) {
+                var userCommunities = userSnapshot.data().communities;
+
+                if (userCommunities && userCommunities.length > 0) {
+                    // Cria o modal com a lista de comunidades do usuário
+                    var modalContent = document.createElement('div');
+                    modalContent.id = 'user-communities-modal';
+                    var communityList = document.createElement('ul');
+                    communityList.className = 'community-list';
+
+                    userCommunities.forEach((communityId) => {
+                        firebase.firestore().collection("communities").doc(communityId).get().then((communityDoc) => {
+                            if (communityDoc.exists) {
+                                var community = communityDoc.data();
+                                var communityItem = document.createElement('li');
+                                communityItem.id = `community-item-${communityId}`; // Adiciona um ID único
+                                communityItem.className = 'community-item';
+
+                                // Adiciona o nome da comunidade
+                                var communityName = document.createElement('span');
+                                communityName.innerText = community.name;
+
+                                // Adiciona os botões
+                                var buttonsContainer = document.createElement('div');
+                                buttonsContainer.className = 'community-item-buttons';
+
+                                var enterButton = document.createElement('button');
+                                enterButton.innerText = 'Entrar';
+                                enterButton.onclick = function () {
+                                    enterCommunity(communityId, userSnapshot.data().username);
+                                };
+
+                                // Adicionando botão de sair
+                                var leaveButton = document.createElement('button');
+                                leaveButton.innerText = 'Sair';
+                                leaveButton.onclick = function () {
+                                    leaveCommunity(communityId);
+                                };
+                                buttonsContainer.appendChild(leaveButton);
+
+                                buttonsContainer.appendChild(enterButton);
+
+                                // Adiciona elementos à lista de comunidades
+                                communityItem.appendChild(communityName);
+                                communityItem.appendChild(buttonsContainer);
+                                communityList.appendChild(communityItem);
+                            }
+                        });
+                    });
+
+                    modalContent.appendChild(communityList);
+
+                    Swal.fire({
+                        title: 'Suas Comunidades',
+                        html: modalContent,
+                        confirmButtonText: 'Fechar'
+                    });
+                } else {
+                    iziToast.info({
+                        title: 'Informação',
+                        message: 'Você ainda não faz parte de nenhuma comunidade.',
+                        position: 'topCenter'
+                    });
+                }
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter comunidades do usuário:", error);
+            iziToast.error({
+                title: 'Erro',
+                message: 'Falha ao obter suas comunidades. Tente novamente mais tarde.',
+                position: 'topCenter'
+            });
+        });
+    }
+}
+
+
+     function leaveCommunity(communityId) {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userId = user.uid;
+
+        // Remove o usuário da lista de membros da comunidade
+        db.collection("communities").doc(communityId).get().then((doc) => {
+            if (doc.exists) {
+                var members = doc.data().members || [];
+
+                // Verifica se o usuário é um membro antes de tentar removê-lo
+                if (members.includes(userId)) {
+                    db.collection("communities").doc(communityId).update({
+                        members: firebase.firestore.FieldValue.arrayRemove(userId)
+                    }).then(() => {
+                        console.log("Usuário removido da comunidade com sucesso!");
+
+                        // Remove a comunidade da lista de comunidades do usuário
+                        db.collection("users").doc(userId).update({
+                            communities: firebase.firestore.FieldValue.arrayRemove(communityId)
+                        }).then(() => {
+                            console.log("Comunidade removida da lista do usuário com sucesso!");
+
+                            // Recarrega as informações do usuário e as comunidades
+                            loadUserInfo();
+                            loadCommunities();
+
+                            // Exibe um iziToast informando que o usuário saiu da comunidade
+                            iziToast.success({
+                                title: 'Sucesso',
+                                message: 'Você saiu da comunidade.',
+                                position: 'topCenter'
+                            });
+
+                            // Remove a comunidade da lista no modal instantaneamente
+                            var communityItem = document.getElementById(`community-item-${communityId}`);
+                            if (communityItem) {
+                                communityItem.remove();
+                            }
+                        }).catch((error) => {
+                            console.error("Erro ao remover comunidade da lista do usuário:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Erro ao remover usuário da comunidade:", error);
+                    });
+                } else {
+                    console.warn("O usuário não é membro desta comunidade.");
+                }
+            } else {
+                console.error("Comunidade não encontrada:", communityId);
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter dados da comunidade:", error);
+        });
+    }
+}
+
+
+function loadPosts() {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        firebase.firestore().collection("posts").onSnapshot((querySnapshot) => {
+            document.getElementById('content').innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                var post = doc.data();
+                var postCard = document.createElement('div');
+                postCard.className = 'post-card';
+
+                // Adicionando imagem ao card
+                if (post.image) {
+                    var postImage = document.createElement('img');
+                    postImage.src = post.image;
+                    postImage.alt = 'Imagem da Publicação';
+                    postCard.appendChild(postImage);
+                }
+
+                // Adicionando título abaixo da imagem
+                var postTitle = document.createElement('h4');
+                postTitle.innerText = post.description || 'Sem Título';
+                postCard.appendChild(postTitle);
+
+                // Adicionando contagem de likes
+                var likeCount = document.createElement('span');
+                likeCount.innerText = `${post.likes.length} Likes`;
+                postCard.appendChild(likeCount);
+
+                // Adicionando ícones de favorite_border e chat_bubble_outline
+                var iconsContainer = document.createElement('div');
+                iconsContainer.className = 'post-icons';
+
+                var favoriteIcon = document.createElement('i');
+                favoriteIcon.className = 'material-icons';
+                favoriteIcon.innerText = post.likes.includes(user.uid) ? 'favorite' : 'favorite_border';
+                favoriteIcon.style.color = post.likes.includes(user.uid) ? '#63fd63' : 'white';
+
+                favoriteIcon.onclick = function (event) {
+                    event.stopPropagation();
+                    handleLikeButtonClick(doc.id, user.uid);
+                };
+
+                iconsContainer.appendChild(favoriteIcon);
+
+                var chatIcon = document.createElement('i');
+                chatIcon.className = 'material-icons';
+                chatIcon.innerText = 'chat_bubble_outline';
+                chatIcon.onclick = function (event) {
+                    event.stopPropagation();
+                    showCommentsModal(doc.id);
+                };
+
+                iconsContainer.appendChild(chatIcon);
+
+                // Adicionando ícone more_horiz se o usuário for o criador
+                if (post.creator === user.uid) {
+                    var moreIcon = document.createElement('i');
+                    moreIcon.className = 'material-icons';
+                    moreIcon.innerText = 'more_horiz';
+
+                    moreIcon.onclick = function () {
+                        showOptionsModal(doc.id);
+                    };
+
+                    iconsContainer.appendChild(moreIcon);
+                }
+
+                postCard.onclick = function () {
+                    // Evento de clique no card para evitar abrir o modal de comentários automaticamente
+                };
+
+                postCard.appendChild(iconsContainer);
+
+                document.getElementById('content').appendChild(postCard);
+            });
+        }, (error) => {
+            console.error("Erro ao carregar publicações:", error);
+        });
+    }
+}
+function showOptionsModal(postId) {
+    Swal.fire({
+        title: 'Opções da Publicação',
+        showCancelButton: true,
+        confirmButtonText: 'Editar',
+        cancelButtonText: 'Excluir',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Opção para editar a publicação
+            showEditPostModal(postId);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Opção para excluir a publicação
+            showDeletePostConfirmation(postId);
+        }
+    });
+}
+
+
+function showDeletePostConfirmation(postId) {
+    Swal.fire({
+        title: 'Tem certeza?',
+        html: '<span style="color: #f8f9fa;">Esta ação não pode ser revertida!</span>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Lógica para excluir a publicação
+            deletePost(postId);
+        }
+    });
+}
+
+
+function deletePost(postId) {
+    // Lógica para excluir a publicação do Firestore
+    firebase.firestore().collection("posts").doc(postId).delete().then(() => {
+        console.log("Publicação excluída com sucesso!");
+    }).catch((error) => {
+        console.error("Erro ao excluir publicação:", error);
+    });
+}
+     function showEditPostModal(postId) {
+    var user = firebase.auth().currentUser;
+
+    // Obtém os dados da publicação para preencher o campo de descrição
+    firebase.firestore().collection("posts").doc(postId).get().then((doc) => {
+        var post = doc.data();
+
+        Swal.fire({
+            title: 'Editar Publicação',
+            html:
+    '<label for="edit-post-title">Novo Título:</label>' +
+    '<input type="text" id="edit-post-title" name="edit-post-title" class="swal2-input" style="color:white; background-color: #1E1E1E; border-radius:18px; border: none; outline: none; box-shadow: none;" value="' + (post.description || '') + '">',
+    showCancelButton: true,
+            confirmButtonText: 'Salvar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                var newPostTitle = document.getElementById('edit-post-title').value.trim();
+
+                if (!newPostTitle) {
+                    Swal.showValidationMessage('O novo título não pode estar em branco.');
+                    return false;
+                }
+
+                // Atualiza a descrição da publicação no Firestore
+                firebase.firestore().collection("posts").doc(postId).update({ description: newPostTitle }).then(() => {
+                    console.log("Descrição da publicação atualizada com sucesso!");
+                }).catch((error) => {
+                    console.error("Erro ao atualizar descrição da publicação:", error);
+                });
+
+                return { newTitle: newPostTitle };
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Lógica para atualizar a interface com o novo título, se necessário
+                console.log("Novo título:", result.value.newTitle);
+            }
+        });
+    }).catch((error) => {
+        console.error("Erro ao obter dados da publicação para edição:", error);
+    });
+}
+
+
+// Função para lidar com o clique no botão de like
+function handleLikeButtonClick(postId, userId) {
+    var postRef = firebase.firestore().collection("posts").doc(postId);
+
+    postRef.get().then((doc) => {
+        var post = doc.data();
+
+        // Verifica se o usuário já deu like na publicação
+        if (!post.likes.includes(userId)) {
+            // Adiciona o usuário ao array de likes
+            post.likes.push(userId);
+        } else {
+            // Remove o usuário do array de likes
+            post.likes = post.likes.filter((id) => id !== userId);
+        }
+
+        // Atualiza a contagem de likes e o ícone
+        postRef.update({ likes: post.likes }).then(() => {
+            console.log("Like atualizado com sucesso!");
+        }).catch((error) => {
+            console.error("Erro ao atualizar like:", error);
+        });
+    }).catch((error) => {
+        console.error("Erro ao obter dados da publicação:", error);
+    });
+}
+
+
+// Função para exibir o modal de comentários
+function showCommentsModal(postId) {
+    // Referência à coleção "posts" e ao documento específico
+    var postRef = firebase.firestore().collection("posts").doc(postId);
+    // Dentro da função showCommentsModal, antes do preConfirm
+document.addEventListener('click', function (event) {
+    if (event.target.classList.contains('delete-comment')) {
+        // Se o botão Excluir foi clicado
+        var commentIndex = event.target.dataset.commentIndex;
+        deleteComment(postRef, commentIndex);
+    }
+});
+
+// ...
+
+// Função para excluir um comentário
+function deleteComment(postRef, commentIndex) {
+    postRef.get().then((doc) => {
+        if (doc.exists) {
+            var post = doc.data();
+            var user = firebase.auth().currentUser;
+
+            if (user && post.comments && post.comments[commentIndex] && post.comments[commentIndex].uid === user.uid) {
+                // Remove o comentário do array
+                post.comments.splice(commentIndex, 1);
+
+                // Atualiza o documento no Firestore
+                postRef.update({ comments: post.comments })
+                    .then(() => {
+                        console.log("Comentário excluído com sucesso!");
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao excluir comentário:", error);
+                    });
+            }
+        }
+    });
+}
+
+
+    // Adiciona um ouvinte para receber atualizações em tempo real
+    postRef.onSnapshot((doc) => {
+        var post = doc.data();
+
+        // Exibe o modal com os comentários e a área de texto
+        Swal.fire({
+            title: 'Comentários',
+            html: generateCommentsHTML(post.comments),
+            input: 'textarea',
+            inputPlaceholder: 'Digite seu comentário...',
+            showCancelButton: true,
+            confirmButtonText: 'Comentar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: (comment) => {
+                // Adiciona o comentário ao array de comentários
+                if (!post.comments) {
+                    post.comments = [];
+                }
+
+                var user = firebase.auth().currentUser;
+
+                // Busca o nome de usuário associado ao UID
+                var userName = "Usuário Desconhecido"; // Valor padrão se não encontrar
+                firebase.firestore().collection("users").doc(user.uid).get()
+                    .then((userDoc) => {
+                        if (userDoc.exists) {
+                            userName = userDoc.data().username || "Usuário Desconhecido";
+                        }
+
+                        var newComment = {
+                            uid: user.uid,
+                            content: comment,
+                            userDisplayName: userName
+                        };
+
+                        post.comments.push(newComment);
+
+                        // Atualiza o documento no Firestore
+                        return postRef.update({ comments: post.comments })
+                            .then(() => {
+                                console.log("Comentário adicionado com sucesso!");
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao adicionar comentário:", error);
+                                Swal.showValidationMessage('Erro ao adicionar comentário. Tente novamente.');
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao buscar dados do usuário:", error);
+                    });
+            }
+        });
+    }, (error) => {
+        console.error("Erro ao obter comentários:", error);
+    });
+}
+
+// Função auxiliar para gerar HTML dos comentários
+// Função auxiliar para gerar HTML dos comentários
+function generateCommentsHTML(comments) {
+    var html = '<div>';
+
+    if (comments) {
+        comments.forEach((comment, index) => {
+            var userName = comment.userDisplayName || "Usuário Desconhecido"; // Altere conforme necessário
+
+            // Adiciona um botão Excluir apenas se o autor do comentário for o usuário atual
+            var deleteButton = document.createElement('button');
+deleteButton.className = 'delete-comment';
+deleteButton.setAttribute('data-comment-index', index);
+deleteButton.innerText = 'Excluir';
+deleteButton.style.backgroundColor = 'transparent';
+deleteButton.style.color = '#4CAF50';
+deleteButton.style.border = 'none';
+deleteButton.style.cursor = 'pointer';
+deleteButton.style.fontSize = '16px';
+
+// Adicione o botão ao seu contêiner ou à posição desejada no DOM
+// Exemplo: container.appendChild(deleteButton);
+
+            var user = firebase.auth().currentUser;
+            if (user && comment.uid === user.uid) {
+                deleteButton = `<button class="delete-comment" data-comment-index="${index}">Excluir</button>`;
+            }
+
+            html += `<p><span style="color: #919291;">${userName}</span>: <span style="color: #ffffff;">${comment.content}</span> ${deleteButton}</p>`;
+
+        });
+    }
+
+    html += '</div>';
+
+    return html;
+}
+
+
+
+
+
+
+
+    function enterCommunity(communityId, username) {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userId = user.uid;
+        var userDocRef = db.collection("users").doc(userId);
+
+        userDocRef.get().then((userSnapshot) => {
+            if (userSnapshot.exists) {
+                var userCommunities = userSnapshot.data().communities || [];
+
+                // Verifica se o usuário já é membro da comunidade
+                if (!userCommunities.includes(communityId)) {
+                    // Adiciona o usuário à lista de membros da comunidade
+                    db.collection("communities").doc(communityId).update({
+                        members: firebase.firestore.FieldValue.arrayUnion(userId)
+                    }).then(() => {
+                        console.log("Usuário adicionado à comunidade com sucesso!");
+
+                        // Adiciona a comunidade à lista de comunidades do usuário
+                        userDocRef.update({
+                            communities: firebase.firestore.FieldValue.arrayUnion(communityId)
+                        }).then(() => {
+                            console.log("Comunidade adicionada à lista do usuário com sucesso!");
+
+                            // Recarrega as informações do usuário e as comunidades
+                            loadUserInfo();
+                            loadCommunities();
+
+                            // Redireciona para o chat da comunidade
+                            window.location.href = `teste.html?communityId=${communityId}&username=${username}`;
+                        }).catch((error) => {
+                            console.error("Erro ao adicionar comunidade à lista do usuário:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Erro ao adicionar usuário à comunidade:", error);
+                    });
+                } else {
+                    console.warn("O usuário já é membro desta comunidade.");
+
+                    // Redireciona para o chat da comunidade
+                    window.location.href = `teste.html?communityId=${communityId}&username=${username}`;
+                }
+            } else {
+                console.error("Dados do usuário não encontrados:", userId);
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter dados do usuário:", error);
+        });
+    }
+}
+
+
+    
+        function truncateDescription(description) {
+            var maxLength = 100; // Ajuste esse valor conforme necessário
+            return description.length > maxLength ? description.slice(0, maxLength) + '...' : description;
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Erro ao fazer logout:", error);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

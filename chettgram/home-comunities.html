@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4CAF50">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chettgram - Comunidades</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+     <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then((registration) => {
+                console.log('Service Worker registrado com sucesso:', registration);
+              })
+              .catch((error) => {
+                console.error('Erro ao registrar o Service Worker:', error);
+              });
+          });
+        }
+      </script>
+    
+    <style>
+
+        #content {
+            position: relative;
+            z-index: 1;
+        }
+
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out; /* Adição da transição para suavizar o efeito */
+        }
+
+        #welcome-message {
+            color: white;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        #welcome-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Evita interações com o elemento oculto */
+        }
+       
+        body {
+            touch-action: none;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+           
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .account-icon {
+            font-size: 48px;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        em {
+            font-style: italic;
+            font-size: 0.8em;
+            display: block;
+            margin-top: 5px;
+            color: #63FD63; /* Cor verde para o aviso */
+        }
+
+        #content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .iziToast-title,
+        .iziToast-message {
+        font-family:Helvetica;
+            color: #000000 !important; /* Cor preta para o texto */
+            font-weight: bold !important; /* Texto em negrito */
+        }
+
+        .iziToast {
+            background-color: #63FD63 !important; /* Cor de fundo personalizada */
+        }
+        
+
+        footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 10px;
+    text-align: center;
+    z-index: 2; /* Adicione essa linha */
+}
+
+   @media (max-width: 375px){
+    footer button.icon-btn {
+        margin-right: -19px; /* Ajuste o valor conforme necessário */
+    }
+    /* ou o valor que você preferir */
+}
+
+
+        .green-btn {
+            background-color: #63FD63; /* Cor alterada para #63FD63 */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .icon-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+            margin: 0 10px;
+            
+        }
+
+        .icon-btn:focus {
+            background-color: transparent !important;
+        }
+        .community-card {
+    background-size: cover;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    position: relative;
+}
+
+    .community-card::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        filter: blur(60px); /* Ajuste o valor conforme necessário */
+    }
+
+    .community-content-container {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1; /* Coloca o texto acima da imagem de fundo */
+    }
+
+    
+
+    .community-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-left: auto;
+        z-index: 1; /* Coloca os botões acima da imagem de fundo */
+    }
+
+    .community-buttons button {
+        background-color: #63FD63;
+        color: black;
+        border: none;
+        border-radius: 18px;
+        margin-top: 5px;
+        cursor: pointer;
+    }
+
+    .community-buttons button:hover {
+        background-color: #4CAE4C;
+    }
+    /* ... Outros estilos ... */
+
+/* Estilos para o modal de comunidades do usuário */
+#user-communities-modal {
+    background-color: #2b2b2b; /* Cor de fundo dark */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.community-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.community-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2b2b2b; /* Cor de fundo dark */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #4f4f4f; /* Cor da borda */
+}
+
+.community-item-buttons button {
+    background-color: #63FD63; /* Cor do botão */
+    color: black;
+    border: none;
+    border-radius: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.community-item-buttons button:hover {
+    background-color: #4CAE4C;
+    color: white; /* Alterado para fonte branca ao passar o mouse */
+}
+
+/* Altera a cor de fundo do modal */
+.swal2-popup {
+    background-color: #333333; /* Cinza escuro */
+}
+
+/* Altera a cor dos botões de ação */
+.swal2-confirm {
+    background-color: #4CAF50 !important; /* Verde */
+    color: #fff; /* Texto branco */
+}
+
+/* Altera a cor do texto do título */
+.swal2-title {
+    color: #fff; /* Texto branco */
+}
+
+/* Altera a cor do texto do conteúdo */
+.swal2-content {
+    color: #fff; /* Texto branco */
+}
+
+.swal2-confirm:focus, .swal2-confirm:hover {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.swal2-popup .swal2-styled:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Adicione regras de estilo específicas para o botão de edição tornando-o negrito */
+.community-buttons .bold-button {
+    background-color: white;
+    font-weight: bold;
+}
+/* Adicione estas regras de estilo para tornar os botões negrito */
+.community-buttons button {
+    background-color: white;
+    font-weight: bold;
+}
+
+#username-info {
+    text-align: center;
+    font-weight: bold;
+    position: absolute !important;
+    transform: translate(0px, 30px);
+}
+
+
+
+</style>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+   
+</head>
+
+<body>
+
+    <header style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <button class="icon-btn" onclick="showAccountPopup()"><i style="transform: translate(20px, 30px);" class="material-icons account-icon">account_circle</i></button>
+        <!-- Substituído o h1 pela imagem do logo -->
+        <img id="logo-small" src="https://firebasestorage.googleapis.com/v0/b/chettgram.appspot.com/o/Chettgram__1_-removebg-preview.png?alt=media&token=f6d89595-6633-47d7-ac7b-a8893cc59248" alt="Logo" style="width: 140px; height: auto; margin-top: 10px;">
+        <em id="username-info">Adicione um nome de usuário</em>
+      </header>
+      
+      
+      
+
+    <div id="content">
+        <!-- Cards de comunidades serão adicionados aqui dinamicamente -->
+    </div>
+    <div id="welcome-overlay">
+        <div id="welcome-message">
+            Bem-vindo as Comunidades
+        </div>
+    </div>
+    <footer>
+        <button class="icon-btn" onclick="redirectToHomePage()"><i class="material-icons">home</i></button>
+        <button class="icon-btn" onclick="showUserCommunitiesInModal()"><i class="material-icons">forum</i></button>
+        <button class="icon-btn" onclick="showCreateCommunityForm()"><i class="material-icons" style="color: #63FD63;">add_circle_outline</i></button>
+        <button class="icon-btn" onclick="showCreatePostForm()"><i class="material-icons" style="color: #63FD63;">blur_on</i></button>
+        <button class="icon-btn" onclick="logout()"><i class="material-icons">logout</i></button>
+    </footer>
+    
+
+    <!-- Modal de Comunidades -->
+    <div id="communities-modal" class="modal">
+        <div class="modal-content">
+            <h4>Comunidades</h4>
+            <!-- Lista de comunidades será adicionada aqui dinamicamente -->
+        </div>
+    </div>
+
+    <script>
+     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAyySW2B0C6_AwPLLWiwESUQ9y7mDMxoC4",
+  authDomain: "chettgram.firebaseapp.com",
+  projectId: "chettgram",
+  storageBucket: "chettgram.appspot.com",
+  messagingSenderId: "243653327696",
+  appId: "1:243653327696:web:7ab6702055e0bf08924a55",
+  measurementId: "G-FD4GR9HHC0"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+      $(document).ready(function () {
+    $('#welcome-message').delay(2000).fadeOut();
+    $('.modal').modal();
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            loadUserInfo();
+            loadCommunities();
+        }
+    });
+});
+
+function redirectToHomePage() {
+    window.location.href = 'home.html';
+}
+
+ document.addEventListener("DOMContentLoaded", function () {
+            // Aguarde 4 segundos e, em seguida, oculte a mensagem de boas-vindas
+            setTimeout(function () {
+                var welcomeOverlay = document.getElementById('welcome-overlay');
+                welcomeOverlay.classList.add('hidden');
+            }, 2000);
+        });
+
+function showUsernameAlert() {
+    iziToast.warning({
+        title: 'Atenção',
+        message: 'Você ainda não definiu um nome de usuário',
+        position: 'topCenter',
+        timeout: 3000, // Tempo em milissegundos (3 segundos neste exemplo)
+        close: true,
+        backgroundColor: '#63FD63', // Cor de fundo
+        color: 'black' // Cor do texto
+    });
+}
+
+        function loadUserInfo() {
+            var user = firebase.auth().currentUser;
+
+            if (user) {
+                var userDocRef = firebase.firestore().collection("users").doc(user.uid);
+
+                userDocRef.onSnapshot((snapshot) => {
+                    if (snapshot.exists) {
+                        var username = snapshot.data().username;
+                        if (username) {
+                            setUserInfo(username);
+                        } else {
+                            // Se o nome de usuário não estiver definido, exibimos o alerta estilizado
+                            showUsernameAlert();
+                        }
+                    } else {
+                        // Se o documento do usuário não existir, exibimos o alerta estilizado
+                        showUsernameAlert();
+                    }
+                });
+            } else {
+                // Se o usuário não estiver autenticado, exibimos o alerta estilizado
+                showUsernameAlert();
+            }
+        }
+
+        function setUserInfo(username) {
+            document.getElementById('username-info').innerText = username;
+        }
+
+        function showAccountPopup() {
+    Swal.fire({
+        title: 'Defina seu nome de usuário',
+        input: 'text',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (username) => {
+            if (!username) {
+                Swal.showValidationMessage('Nome de usuário não pode ser vazio');
+            }
+            return username;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            setUserInfo(result.value);
+
+            // Salvar o nome de usuário no Firestore
+            var user = firebase.auth().currentUser;
+            if (user) {
+                firebase.firestore().collection("users").doc(user.uid).set({
+                    username: result.value
+                }, { merge: true }).then(() => {
+                    console.log("Nome de usuário salvo com sucesso");
+                }).catch((error) => {
+                    console.error("Erro ao salvar o nome de usuário:", error);
+                });
+            }
+        }
+    });
+}
+
+function showCreateCommunityForm() {
+    Swal.fire({
+        title: 'Criar Comunidade',
+        html:
+            '<label for="community-name">Nome da Comunidade:</label>' +
+            '<input type="text" id="community-name" name="community-name" class="swal2-input">' +
+            '<label for="community-description">Descrição:</label>' +
+            '<textarea id="community-description" name="community-description" class="swal2-input"></textarea>' +
+            '<label for="community-image">URL da Imagem (opcional):</label>' +
+            '<input type="text" id="community-image" name="community-image" class="swal2-input">',
+        showCancelButton: true,
+        confirmButtonText: 'Criar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+            var communityName = document.getElementById('community-name').value.trim();
+            var communityDescription = document.getElementById('community-description').value.trim();
+            var communityImage = document.getElementById('community-image').value.trim();
+
+            if (!communityName || !communityDescription) {
+                Swal.showValidationMessage('Revise as informações novamente.');
+                return false;
+            }
+
+            var user = firebase.auth().currentUser;
+
+            if (user) {
+                // Adiciona o usuário atual como membro ao criar a comunidade
+                var communityData = {
+                    name: communityName,
+                    description: communityDescription,
+                    members: [user.uid],
+                    creators: [user.uid],  // Altera o campo "creator" para "creators" e o define como um array
+                    banned_users: [],  // Adiciona o campo banned_users como um array vazio por padrão
+                };
+
+                // Adiciona a URL da imagem se fornecida
+                if (communityImage) {
+                    communityData.image = communityImage;
+                }
+
+                // Lógica para criar a comunidade no Firestore aqui
+                firebase.firestore().collection("communities").add(communityData).then((docRef) => {
+                    console.log("Comunidade criada com sucesso:", docRef.id);
+                }).catch((error) => {
+                    console.error("Erro ao criar comunidade:", error);
+                });
+            }
+
+            return { name: communityName, description: communityDescription };
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Lógica para adicionar a nova comunidade à interface aqui
+            console.log(result.value);
+        }
+    });
+}
+
+
+function showUserCommunitiesInModal() {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userDocRef = firebase.firestore().collection("users").doc(user.uid);
+
+        userDocRef.get().then((userSnapshot) => {
+            if (userSnapshot.exists) {
+                var userCommunities = userSnapshot.data().communities;
+
+                if (userCommunities && userCommunities.length > 0) {
+                    // Cria o modal com a lista de comunidades do usuário
+                    var modalContent = document.createElement('div');
+                    modalContent.id = 'user-communities-modal';
+                    var communityList = document.createElement('ul');
+                    communityList.className = 'community-list';
+
+                    userCommunities.forEach((communityId) => {
+                        firebase.firestore().collection("communities").doc(communityId).get().then((communityDoc) => {
+                            if (communityDoc.exists) {
+                                var community = communityDoc.data();
+                                var communityItem = document.createElement('li');
+                                communityItem.id = `community-item-${communityId}`; // Adiciona um ID único
+                                communityItem.className = 'community-item';
+
+                                // Adiciona o nome da comunidade
+                                var communityName = document.createElement('span');
+                                communityName.innerText = community.name;
+
+                                // Adiciona os botões
+                                var buttonsContainer = document.createElement('div');
+                                buttonsContainer.className = 'community-item-buttons';
+
+                                var enterButton = document.createElement('button');
+                                enterButton.innerText = 'Entrar';
+                                enterButton.onclick = function () {
+                                    enterCommunity(communityId, userSnapshot.data().username);
+                                };
+
+                                // Adicionando botão de sair
+                                var leaveButton = document.createElement('button');
+                                leaveButton.innerText = 'Sair';
+                                leaveButton.onclick = function () {
+                                    leaveCommunity(communityId);
+                                };
+                                buttonsContainer.appendChild(leaveButton);
+
+                                buttonsContainer.appendChild(enterButton);
+
+                                // Adiciona elementos à lista de comunidades
+                                communityItem.appendChild(communityName);
+                                communityItem.appendChild(buttonsContainer);
+                                communityList.appendChild(communityItem);
+                            }
+                        });
+                    });
+
+                    modalContent.appendChild(communityList);
+
+                    Swal.fire({
+                        title: 'Suas Comunidades',
+                        html: modalContent,
+                        confirmButtonText: 'Fechar'
+                    });
+                } else {
+                    iziToast.info({
+                        title: 'Informação',
+                        message: 'Você ainda não faz parte de nenhuma comunidade.',
+                        position: 'topCenter'
+                    });
+                }
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter comunidades do usuário:", error);
+            iziToast.error({
+                title: 'Erro',
+                message: 'Falha ao obter suas comunidades. Tente novamente mais tarde.',
+                position: 'topCenter'
+            });
+        });
+    }
+}
+
+
+     function leaveCommunity(communityId) {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userId = user.uid;
+
+        // Remove o usuário da lista de membros da comunidade
+        db.collection("communities").doc(communityId).get().then((doc) => {
+            if (doc.exists) {
+                var members = doc.data().members || [];
+
+                // Verifica se o usuário é um membro antes de tentar removê-lo
+                if (members.includes(userId)) {
+                    db.collection("communities").doc(communityId).update({
+                        members: firebase.firestore.FieldValue.arrayRemove(userId)
+                    }).then(() => {
+                        console.log("Usuário removido da comunidade com sucesso!");
+
+                        // Remove a comunidade da lista de comunidades do usuário
+                        db.collection("users").doc(userId).update({
+                            communities: firebase.firestore.FieldValue.arrayRemove(communityId)
+                        }).then(() => {
+                            console.log("Comunidade removida da lista do usuário com sucesso!");
+
+                            // Recarrega as informações do usuário e as comunidades
+                            loadUserInfo();
+                            loadCommunities();
+
+                            // Exibe um iziToast informando que o usuário saiu da comunidade
+                            iziToast.success({
+                                title: 'Sucesso',
+                                message: 'Você saiu da comunidade.',
+                                position: 'topCenter'
+                            });
+
+                            // Remove a comunidade da lista no modal instantaneamente
+                            var communityItem = document.getElementById(`community-item-${communityId}`);
+                            if (communityItem) {
+                                communityItem.remove();
+                            }
+                        }).catch((error) => {
+                            console.error("Erro ao remover comunidade da lista do usuário:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Erro ao remover usuário da comunidade:", error);
+                    });
+                } else {
+                    console.warn("O usuário não é membro desta comunidade.");
+                }
+            } else {
+                console.error("Comunidade não encontrada:", communityId);
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter dados da comunidade:", error);
+        });
+    }
+}
+
+         function editCommunity(communityId) {
+    firebase.firestore().collection("communities").doc(communityId).get().then((doc) => {
+        if (doc.exists) {
+            var community = doc.data();
+
+            Swal.fire({
+                title: 'Editar Comunidade',
+                html:
+                    `<label for="community-name">Nome da Comunidade:</label>` +
+                    `<input type="text" id="community-name" name="community-name" class="swal2-input" value="${community.name}">` +
+                    `<label for="community-description">Descrição:</label>` +
+                    `<textarea id="community-description" name="community-description" class="swal2-input">${community.description}</textarea>` +
+                    `<label for="community-image">URL da Imagem (opcional):</label>` +
+                    `<input type="text" id="community-image" name="community-image" class="swal2-input" value="${community.image || ''}">`,
+                showCancelButton: true,
+                confirmButtonText: 'Atualizar',
+                cancelButtonText: 'Cancelar',
+                showCloseButton: true,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    var newName = document.getElementById('community-name').value.trim();
+                    var newDescription = document.getElementById('community-description').value.trim();
+                    var newImage = document.getElementById('community-image').value.trim();
+
+                    if (!newName || !newDescription) {
+                        Swal.showValidationMessage('Revise as informações novamente.');
+                        return false;
+                    }
+
+                    // Atualiza as informações da comunidade no Firestore
+                    return firebase.firestore().collection("communities").doc(communityId).update({
+                        name: newName,
+                        description: newDescription,
+                        image: newImage || null
+                    }).then(() => {
+                        // Mensagem de sucesso após atualizar
+                        iziToast.success({
+                            title: 'Sucesso',
+                            message: 'Comunidade atualizada com sucesso!',
+                            position: 'topCenter'
+                        });
+                    }).catch((error) => {
+                        // Mensagem de erro após falha na atualização
+                        console.error("Erro ao atualizar comunidade:", error);
+                        iziToast.error({
+                            title: 'Erro',
+                            message: 'Falha ao atualizar a comunidade. Tente novamente mais tarde.',
+                            position: 'topCenter'
+                        });
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading(),
+                showCancelButton: true,
+                cancelButtonText: 'Excluir',
+                cancelButtonColor: '#FF4646'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Lógica após confirmar a atualização
+                    console.log('Comunidade atualizada com sucesso!');
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Se o usuário clicar em "Excluir"
+                    Swal.fire({
+                        title: 'Confirmar exclusão',
+                        text: 'Tem certeza de que deseja excluir esta comunidade?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, excluir',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#FF4646'
+                    }).then((deleteResult) => {
+                        if (deleteResult.isConfirmed) {
+                            // Exclui a comunidade do Firestore
+                            firebase.firestore().collection("communities").doc(communityId).delete().then(() => {
+                                // Mensagem de sucesso após excluir
+                                iziToast.success({
+                                    title: 'Sucesso',
+                                    message: 'Comunidade excluída com sucesso!',
+                                    position: 'topCenter'
+                                });
+                            }).catch((deleteError) => {
+                                // Mensagem de erro após falha na exclusão
+                                console.error("Erro ao excluir comunidade:", deleteError);
+                                iziToast.error({
+                                    title: 'Erro',
+                                    message: 'Falha ao excluir a comunidade. Tente novamente mais tarde.',
+                                    position: 'topCenter'
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            // Documento da comunidade não encontrado
+            console.error("Comunidade não encontrada:", communityId);
+            iziToast.error({
+                title: 'Erro',
+                message: 'Comunidade não encontrada. Tente novamente mais tarde.',
+                position: 'topCenter'
+            });
+        }
+    }).catch((error) => {
+        console.error("Erro ao obter dados da comunidade:", error);
+        iziToast.error({
+            title: 'Erro',
+            message: 'Falha ao obter dados da comunidade. Tente novamente mais tarde.',
+            position: 'topCenter'
+        });
+    });
+}
+
+
+function loadCommunities() {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        firebase.firestore().collection("communities").onSnapshot((querySnapshot) => {
+            document.getElementById('content').innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                var community = doc.data();
+                var communityCard = document.createElement('div');
+                communityCard.className = 'community-card';
+
+                // Adicionando imagem de fundo ao card
+                if (community.image) {
+                    communityCard.style.backgroundImage = `url(${community.image})`;
+                    communityCard.style.backgroundPosition = 'center';
+                    communityCard.style.backgroundSize = 'cover';
+                }
+
+                // Adicionando nome e descrição ao card
+                var contentContainer = document.createElement('div');
+                contentContainer.className = 'community-content-container';
+
+                var communityContent = document.createElement('div');
+                communityContent.className = 'community-content';
+                communityContent.innerHTML = `<h3>${community.name}</h3><p>${truncateDescription(community.description)}</p>`;
+                contentContainer.appendChild(communityContent);
+
+                // Adicionando botões ao card
+                var buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'community-buttons';
+
+                // Adicionando botão de entrar
+                var enterButton = document.createElement('button');
+                enterButton.innerText = 'Entrar';
+                enterButton.onclick = function () {
+                    const user = firebase.auth().currentUser;
+
+                    if (user) {
+                        var userId = user.uid;
+                        var userDocRef = db.collection("users").doc(userId);
+
+                        userDocRef.get().then((userSnapshot) => {
+                            if (userSnapshot.exists) {
+                                // Obtém o nome de usuário
+                                var username = userSnapshot.data().username;
+
+                                // Verifica se o usuário já é membro da comunidade
+                                if (!userSnapshot.data().communities || !userSnapshot.data().communities.includes(doc.id)) {
+                                    // Entra na comunidade
+                                    enterCommunity(doc.id, username);
+                                } else {
+                                    // Usuário já é membro, exiba uma mensagem ou lógica adequada
+                                    iziToast.warning({
+                                        title: 'Atenção',
+                                        message: 'Você já é membro desta comunidade.',
+                                        position: 'topCenter',
+                                        timeout: 3000
+                                    });
+                                }
+                            }
+                        }).catch((error) => {
+                            console.error("Erro ao obter dados do usuário:", error);
+                            // Lidar com o erro conforme necessário
+                        });
+                    }
+                };
+                buttonsContainer.appendChild(enterButton);
+
+                // Adicionando botão de descrição
+                var descriptionButton = document.createElement('button');
+                descriptionButton.innerText = 'Descrição';
+                descriptionButton.onclick = function () {
+                    Swal.fire({
+                        title: 'Descrição da Comunidade',
+                        text: community.description,
+                        confirmButtonText: 'Fechar'
+                    });
+                };
+                buttonsContainer.appendChild(descriptionButton);
+
+                // Adicionando botão de edição se o usuário for um dos criadores da comunidade
+                if (community.creators && community.creators.includes(user.uid)) {
+                    var editButton = document.createElement('button');
+                    editButton.innerText = 'Editar';
+                    editButton.className = 'bold-button'; // Adiciona uma classe para o botão de edição
+                    editButton.onclick = function () {
+                        // Função para editar a comunidade
+                        editCommunity(doc.id);
+                    };
+                    buttonsContainer.appendChild(editButton);
+                }
+
+                contentContainer.appendChild(buttonsContainer);
+
+                communityCard.appendChild(contentContainer);
+                document.getElementById('content').appendChild(communityCard);
+            });
+        }, (error) => {
+            console.error("Erro ao carregar comunidades:", error);
+        });
+    }
+}
+
+
+    function enterCommunity(communityId, username) {
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        var userId = user.uid;
+        var userDocRef = db.collection("users").doc(userId);
+
+        userDocRef.get().then((userSnapshot) => {
+            if (userSnapshot.exists) {
+                var userCommunities = userSnapshot.data().communities || [];
+
+                // Verifica se o usuário já é membro da comunidade
+                if (!userCommunities.includes(communityId)) {
+                    // Adiciona o usuário à lista de membros da comunidade
+                    db.collection("communities").doc(communityId).update({
+                        members: firebase.firestore.FieldValue.arrayUnion(userId)
+                    }).then(() => {
+                        console.log("Usuário adicionado à comunidade com sucesso!");
+
+                        // Adiciona a comunidade à lista de comunidades do usuário
+                        userDocRef.update({
+                            communities: firebase.firestore.FieldValue.arrayUnion(communityId)
+                        }).then(() => {
+                            console.log("Comunidade adicionada à lista do usuário com sucesso!");
+
+                            // Recarrega as informações do usuário e as comunidades
+                            loadUserInfo();
+                            loadCommunities();
+
+                            // Redireciona para o chat da comunidade
+                            window.location.href = `teste.html?communityId=${communityId}&username=${username}`;
+                        }).catch((error) => {
+                            console.error("Erro ao adicionar comunidade à lista do usuário:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Erro ao adicionar usuário à comunidade:", error);
+                    });
+                } else {
+                    console.warn("O usuário já é membro desta comunidade.");
+
+                    // Redireciona para o chat da comunidade
+                    window.location.href = `teste.html?communityId=${communityId}&username=${username}`;
+                }
+            } else {
+                console.error("Dados do usuário não encontrados:", userId);
+            }
+        }).catch((error) => {
+            console.error("Erro ao obter dados do usuário:", error);
+        });
+    }
+}
+
+
+    
+        function truncateDescription(description) {
+            var maxLength = 100; // Ajuste esse valor conforme necessário
+            return description.length > maxLength ? description.slice(0, maxLength) + '...' : description;
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Erro ao fazer logout:", error);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

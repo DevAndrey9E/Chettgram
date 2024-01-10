@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>Banido Permanentemente</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then((registration) => {
+                console.log('Service Worker registrado com sucesso:', registration);
+              })
+              .catch((error) => {
+                console.error('Erro ao registrar o Service Worker:', error);
+              });
+          });
+        }
+      </script>
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/fotos-gratis/borrao-abstrato-vazio-gradiente-verde-studio-bem-usar-como-plano-de-fundo-modelo-de-site-quadro-relatorio-de-negocios_1258-67050.jpg');
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #ban-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center; /* Agora o texto está centralizado */
+            max-width: 80%; /* Define a largura máxima para melhor visualização em dispositivos móveis */
+        }
+
+        #ban-message {
+            margin-bottom: 20px;
+        }
+
+        #home-button {
+            background-color: #ff5050; /* Vermelho mais forte */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #home-button:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ban-container">
+        <h1 id="ban-message">Banido Permanentemente</h1>
+        <p>Você foi banido permanentemente dessa comunidade por violar os termos ou políticas determinadas pelos seus criadores.</p>
+
+        <a id="home-button" href="home.html">Página Inicial</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+
+    <script>
+        // Adiciona o IziToast "Banido"
+        iziToast.error({
+            title: 'Banido',
+            message: 'Você foi banido permanentemente.',
+            position: 'topCenter',
+            icon: 'fas fa-exclamation-circle' // Adiciona o ícone de alerta
+        });
+    </script>
+</body>
+
+</html>
